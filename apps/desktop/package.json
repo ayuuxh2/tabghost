@@ -1,6 +1,6 @@
 {
   "name": "@tabghost/desktop",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "TabGhost launcher: automation API server + CLI over session-core.",
   "type": "module",
   "bin": {
