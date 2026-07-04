@@ -158,8 +158,9 @@ export class SessionManager {
       meta.status = "live";
       const existingPages = context.pages();
       const page = existingPages.length > 0 ? existingPages[0] : await context.newPage();
-      if (input.startUrl) {
-        await page.goto(input.startUrl, { waitUntil: "domcontentloaded" }).catch((e) => {
+      const startUrl = input.startUrl ?? process.env.TABGHOST_START_URL;
+      if (startUrl) {
+        await page.goto(startUrl, { waitUntil: "domcontentloaded" }).catch((e) => {
           meta.lastError = String(e);
         });
       }

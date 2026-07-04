@@ -8,10 +8,11 @@
   ],
   "scripts": {
     "typecheck": "bun run --filter '*' typecheck",
+    "test": "bun run --cwd packages/session-core test",
     "api": "bun run --cwd apps/desktop start",
     "dev": "bun run --cwd apps/desktop dev",
     "cli": "bun run --cwd apps/desktop cli",
     "web": "bun run --cwd apps/control-panel dev",
-    "build:core": "bun run --cwd packages/core build"
+    "build:core": "bun run --cwd packages/session-core build"
   }
 }

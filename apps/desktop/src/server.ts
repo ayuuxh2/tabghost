@@ -10,6 +10,7 @@ import {
 } from "@tabghost/session-core";
 import { runAction } from "./actions.js";
 import { EMBEDDED_DASHBOARD_HTML } from "./dashboard.js";
+import { EMBEDDED_HOME_HTML } from "./dashboard.js";
 
 /**
  * TabGhost automation API.
@@ -73,6 +74,18 @@ if (!DASHBOARD_HTML) {
   }
 }
 app.get("/", (c) => c.html(DASHBOARD_HTML));
+
+// TabGhost start page ("new tab") shown inside isolated sessions by default.
+let HOME_HTML = EMBEDDED_HOME_HTML || "";
+if (!HOME_HTML) {
+  try {
+    HOME_HTML = readFileSync(join(__dir, "../../control-panel/src/home.html"), "utf8");
+  } catch {
+    HOME_HTML = "<h1>TabGhost</h1>";
+  }
+}
+app.get("/home", (c) => c.html(HOME_HTML));
+app.get("/newtab", (c) => c.html(HOME_HTML));
 
 app.get("/identities", (c) => c.json({ identities: listIdentityPresets() }));
 

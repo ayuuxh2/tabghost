@@ -7,3 +7,7 @@
 import html from "../../control-panel/src/ui.html" with { type: "text" };
 
 export const EMBEDDED_DASHBOARD_HTML: string = html;
+
+import homeHtml from "../../control-panel/src/home.html" with { type: "text" };
+
+export const EMBEDDED_HOME_HTML: string = homeHtml;
