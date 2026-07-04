@@ -7,17 +7,39 @@
  *
  * With no arguments it starts the server (the most common single-binary use).
  */
+import { runCLI } from "./cli.js";
+import serverConfig from "./server.js";
 
 async function main() {
   const argv = process.argv.slice(2);
   const cmd = argv[0];
 
   if (!cmd || cmd === "serve") {
-    // Importing the server module starts it (default export is the Bun server config).
-    const mod = await import("./server.js");
-    const cfg = (mod.default ?? {}) as { port?: number; fetch?: (req: any) => any };
+    const cfg = serverConfig as {
+      port?: number;
+      fetch?: (req: any) => any;
+      shutdown?: () => Promise<void>;
+      info?: string;
+    };
+
     if (cfg.fetch) {
       const port = cfg.port ?? 8787;
+
+      // Log server status
+      if (cfg.info) {
+        console.log(cfg.info);
+      }
+
+      // Handle termination signals to close active sessions
+      if (cfg.shutdown) {
+        const shutdownHandler = async () => {
+          await cfg.shutdown?.();
+          process.exit(0);
+        };
+        process.on("SIGINT", shutdownHandler);
+        process.on("SIGTERM", shutdownHandler);
+      }
+
       if (typeof Bun !== "undefined") {
         // Run with Bun's built-in fast HTTP server
         // @ts-ignore
@@ -34,7 +56,7 @@ async function main() {
   }
 
   // Delegate everything else to the CLI.
-  await import("./cli.js");
+  await runCLI();
 }
 
 main().catch((e) => {

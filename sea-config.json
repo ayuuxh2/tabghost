@@ -1,0 +1,4 @@
+{
+  "main": "dist/bundled.cjs",
+  "output": "dist/sea-prep.blob"
+}

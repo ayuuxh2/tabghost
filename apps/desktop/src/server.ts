@@ -61,7 +61,9 @@ app.get("/health", (c) => c.json({ ok: true, root: ROOT, service: "tabghost" }))
 // binary it is embedded at build time (see dashboard.ts); in dev we fall back
 // to reading it from disk. Serving it from the same origin as the API avoids
 // CORS and keeps the launcher a single process.
-const __dir = dirname(fileURLToPath(import.meta.url));
+const __dir = typeof __dirname !== "undefined"
+  ? __dirname
+  : dirname(fileURLToPath(import.meta.url));
 let DASHBOARD_HTML = EMBEDDED_DASHBOARD_HTML || "";
 if (!DASHBOARD_HTML) {
   try {
@@ -164,13 +166,10 @@ app.post("/sessions/:id/actions", async (c) => {
   }
 });
 
-async function shutdown() {
+export async function shutdown() {
   await manager.closeAll().catch(() => {});
-  process.exit(0);
 }
-process.on("SIGINT", shutdown);
-process.on("SIGTERM", shutdown);
 
-console.log(`[tabghost] api listening on :${PORT}  (home=${ROOT}${TOKEN ? ", auth=on" : ""})`);
+export const info = `[tabghost] api listening on :${PORT}  (home=${ROOT}${TOKEN ? ", auth=on" : ""})`;
 
-export default { port: PORT, fetch: app.fetch };
+export default { port: PORT, fetch: app.fetch, shutdown, info };

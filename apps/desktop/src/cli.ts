@@ -102,7 +102,18 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+export async function runCLI() {
+  await main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}
+
+const isMain = process.argv[1] && (
+  process.argv[1].endsWith("cli.ts") || 
+  process.argv[1].endsWith("cli.js") ||
+  process.argv[1].endsWith("cli.cjs")
+);
+if (isMain) {
+  runCLI();
+}
