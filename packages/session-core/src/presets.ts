@@ -42,6 +42,28 @@ const linuxChrome128: HardwarePreset = {
   pixelRatio: 1,
 };
 
+const winChrome131: HardwarePreset = {
+  userAgent:
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+  platform: "Win32",
+  hardwareConcurrency: 16,
+  deviceMemory: 8,
+  screen: { width: 2560, height: 1440, availWidth: 2560, availHeight: 1400 },
+  colorDepth: 24,
+  pixelRatio: 1,
+};
+
+const pixelChrome131: HardwarePreset = {
+  userAgent:
+    "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36",
+  platform: "Linux armv8l",
+  hardwareConcurrency: 8,
+  deviceMemory: 8,
+  screen: { width: 412, height: 915, availWidth: 412, availHeight: 915 },
+  colorDepth: 24,
+  pixelRatio: 2.625,
+};
+
 const angleRenderer: RendererPreset = {
   webglVendor: "Google Inc. (Intel)",
   webglRenderer: "ANGLE (Intel, Intel(R) UHD Graphics 630 Direct3D11 vs_5_0 ps_5_0, D3D11)",
@@ -63,6 +85,21 @@ const mesaRenderer: RendererPreset = {
   audioSeed: "tg-mesa-audio-01",
 };
 
+const nvidiaRenderer: RendererPreset = {
+  webglVendor: "Google Inc. (NVIDIA)",
+  webglRenderer:
+    "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  canvasSeed: "tg-nvidia-3060-01",
+  audioSeed: "tg-nvidia-audio-01",
+};
+
+const adrenoRenderer: RendererPreset = {
+  webglVendor: "Google Inc. (Qualcomm)",
+  webglRenderer: "ANGLE (Qualcomm, Adreno (TM) 730, OpenGL ES 3.2)",
+  canvasSeed: "tg-adreno-730-01",
+  audioSeed: "tg-adreno-audio-01",
+};
+
 const usEast: GeoPreset = {
   locale: "en-US",
   timezone: "America/New_York",
@@ -82,6 +119,27 @@ const euWest: GeoPreset = {
   timezone: "Europe/London",
   timezoneId: "Europe/London",
   geolocation: { latitude: 51.5074, longitude: -0.1278 },
+};
+
+const euCentral: GeoPreset = {
+  locale: "de-DE",
+  timezone: "Europe/Berlin",
+  timezoneId: "Europe/Berlin",
+  geolocation: { latitude: 52.52, longitude: 13.405 },
+};
+
+const apacIn: GeoPreset = {
+  locale: "en-IN",
+  timezone: "Asia/Kolkata",
+  timezoneId: "Asia/Kolkata",
+  geolocation: { latitude: 19.076, longitude: 72.8777 },
+};
+
+const apacSg: GeoPreset = {
+  locale: "en-SG",
+  timezone: "Asia/Singapore",
+  timezoneId: "Asia/Singapore",
+  geolocation: { latitude: 1.3521, longitude: 103.8198 },
 };
 
 export const IDENTITY_PRESETS: IdentityPreset[] = [
@@ -119,6 +177,34 @@ export const IDENTITY_PRESETS: IdentityPreset[] = [
     hardware: linuxChrome128,
     renderer: mesaRenderer,
     geo: usEast,
+  },
+  {
+    id: "win-gaming-eu",
+    label: "Windows / Chrome 131 / RTX 3060 / EU Central",
+    hardware: winChrome131,
+    renderer: nvidiaRenderer,
+    geo: euCentral,
+  },
+  {
+    id: "win-us-west-131",
+    label: "Windows / Chrome 131 / US West",
+    hardware: winChrome131,
+    renderer: nvidiaRenderer,
+    geo: usWest,
+  },
+  {
+    id: "pixel8-in",
+    label: "Pixel 8 / Chrome 131 / India",
+    hardware: pixelChrome131,
+    renderer: adrenoRenderer,
+    geo: apacIn,
+  },
+  {
+    id: "pixel8-sg",
+    label: "Pixel 8 / Chrome 131 / Singapore",
+    hardware: pixelChrome131,
+    renderer: adrenoRenderer,
+    geo: apacSg,
   },
 ];
 

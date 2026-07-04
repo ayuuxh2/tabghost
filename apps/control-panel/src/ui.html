@@ -155,7 +155,7 @@
         loadProfiles();
       }catch(e){toast(e.message,true);}
     }
-    async function spawn(id){try{await api('/sessions',{method:'POST',body:JSON.stringify({subProfileId:id,startUrl:'https://example.com'})});toast('Session launched');loadSessions();}catch(e){toast(e.message,true);}}
+    async function spawn(id){const url=prompt('Launch session — start URL:','https://example.com');if(url===null)return;try{await api('/sessions',{method:'POST',body:JSON.stringify({subProfileId:id,startUrl:url||'about:blank'})});toast('Session launched');loadSessions();}catch(e){toast(e.message,true);}}
     async function clone(id){try{await api('/profiles/'+id+'/clone',{method:'POST',body:'{}'});toast('Cloned');loadProfiles();}catch(e){toast(e.message,true);}}
     async function del(id){if(!confirm('Delete this sub-profile and all its state?'))return;try{await api('/profiles/'+id,{method:'DELETE'});toast('Deleted');loadProfiles();loadSessions();}catch(e){toast(e.message,true);}}
     async function closeSession(id){try{await api('/sessions/'+id,{method:'DELETE'});toast('Closed');loadSessions();}catch(e){toast(e.message,true);}}
