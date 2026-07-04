@@ -1,6 +1,6 @@
 {
   "name": "@tabghost/session-core",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Core session, sub-profile, and isolation primitives for TabGhost.",
   "type": "module",
   "main": "./dist/index.js",

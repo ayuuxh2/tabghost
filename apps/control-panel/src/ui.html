@@ -183,9 +183,14 @@
     document.getElementById('m-ok').onclick=async()=>{const fn=modalOk;hideModal();if(fn)await fn();};
     document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')hideModal();});
     function spawn(id){
-      showModal('Launch session','<label>Start URL</label><input id="m-url" value="https://example.com" />','Launch',async()=>{
+      showModal('Launch session','<label>Start URL</label><input id="m-url" value="https://example.com" /><label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-weight:400"><input type="checkbox" id="m-headed" checked style="width:auto" /> Show browser window (uncheck for headless/background)</label>','Launch',async()=>{
         const url=(document.getElementById('m-url')?.value||'').trim();
-        try{await api('/sessions',{method:'POST',body:JSON.stringify({subProfileId:id,startUrl:url||'about:blank'})});toast('Session launched');loadSessions();}catch(e){toast(e.message,true);}
+        const headed=document.getElementById('m-headed')?.checked;
+        try{
+          const {session}=await api('/sessions',{method:'POST',body:JSON.stringify({subProfileId:id,startUrl:url||'about:blank',headless:!headed})});
+          toast('Session '+(session?.status||'launched')+(headed?' (window opening…)':' (headless)'));
+          loadSessions();
+        }catch(e){var m=e.message||'';if(headed&&/display|X server|Missing X|:0|xvfb|cannot open display/i.test(m)){m='Could not open a visible window (no display available on this machine). Try again with “Show browser window” unchecked to run headless.';}toast(m,true);}
       });
     }
     async function clone(id){try{await api('/profiles/'+id+'/clone',{method:'POST',body:'{}'});toast('Cloned');loadProfiles();}catch(e){toast(e.message,true);}}

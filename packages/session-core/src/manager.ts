@@ -178,8 +178,14 @@ export class SessionManager {
       return meta;
     } catch (e) {
       meta.status = "error";
-      meta.lastError = String(e);
-      throw e;
+      const msg = String(e);
+      if (/Executable doesn't exist|Looks like Playwright.*install|browserType.launch/i.test(msg)) {
+        meta.lastError =
+          "Chromium is not installed for this runtime. Run: bunx playwright install chromium";
+      } else {
+        meta.lastError = msg;
+      }
+      throw new Error(meta.lastError);
     }
   }
 
