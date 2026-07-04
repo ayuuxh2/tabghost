@@ -25,10 +25,18 @@ jobs:
       - name: Typecheck session-core
         run: bun run --cwd packages/session-core typecheck
 
+      - name: Install Playwright Chromium
+        run: bunx playwright install --with-deps chromium
+
+      - name: Run tests (unit + browser isolation)
+        run: bun run --cwd packages/session-core test
+        env:
+          TABGHOST_HOME: ${{ runner.temp }}/tabghost-ci
+
       - name: Smoke test CLI
         run: |
           bun run apps/desktop/src/cli.ts identities
           bun run apps/desktop/src/cli.ts create "CI Test" win-us-east
           bun run apps/desktop/src/cli.ts list
         env:
-          TABGHOST_HOME: ${{ runner.temp }}/tabghost-ci
+          TABGHOST_HOME: ${{ runner.temp }}/tabghost-cli
