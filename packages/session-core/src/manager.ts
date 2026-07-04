@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { chromium, type BrowserContext } from "playwright";
+import type { BrowserContext } from "playwright";
 import { SubProfileStore } from "./store.js";
 import { getIdentityPreset, IDENTITY_PRESETS } from "./presets.js";
 import { buildContextOptions, buildInitScript } from "./identity.js";
@@ -9,6 +9,23 @@ import type {
   SpawnSessionInput,
   SubProfile,
 } from "./types.js";
+
+/**
+ * Playwright is imported lazily so the CLI/API can manage sub-profiles and
+ * identities without a browser runtime present. It is only required when a
+ * live session is actually spawned.
+ */
+async function loadChromium() {
+  try {
+    const pw = await import("playwright");
+    return pw.chromium;
+  } catch {
+    throw new Error(
+      "Playwright runtime not found. Install it in the TabGhost runtime directory " +
+        "(bun add playwright && bunx playwright install chromium) to spawn live sessions.",
+    );
+  }
+}
 
 interface LiveSession {
   meta: Session;
@@ -121,6 +138,7 @@ export class SessionManager {
     };
 
     try {
+      const chromium = await loadChromium();
       const context = await chromium.launchPersistentContext(profile.userDataDir, {
         headless,
         locale: opts.locale,

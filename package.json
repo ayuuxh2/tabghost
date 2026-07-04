@@ -11,6 +11,7 @@
     "api": "bun run --cwd apps/desktop start",
     "dev": "bun run --cwd apps/desktop dev",
     "cli": "bun run --cwd apps/desktop cli",
-    "web": "bun run --cwd apps/control-panel dev"
+    "web": "bun run --cwd apps/control-panel dev",
+    "build:core": "bun run --cwd packages/core build"
   }
 }

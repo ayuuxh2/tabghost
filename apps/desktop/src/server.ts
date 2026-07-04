@@ -9,6 +9,7 @@ import {
   type CreateSubProfileInput,
 } from "@tabghost/session-core";
 import { runAction } from "./actions.js";
+import { EMBEDDED_DASHBOARD_HTML } from "./dashboard.js";
 
 /**
  * TabGhost automation API.
@@ -55,17 +56,21 @@ app.use("*", async (c, next) => {
 app.get("/health", (c) => c.json({ ok: true, root: ROOT, service: "tabghost" }));
 
 // --- dashboard --------------------------------------------------------------
-// The control-panel UI is a single self-contained HTML file. Serving it from
-// the same origin as the API avoids CORS and keeps the launcher a single process.
+// The control-panel UI is a single self-contained HTML file. In the compiled
+// binary it is embedded at build time (see dashboard.ts); in dev we fall back
+// to reading it from disk. Serving it from the same origin as the API avoids
+// CORS and keeps the launcher a single process.
 const __dir = dirname(fileURLToPath(import.meta.url));
-let DASHBOARD_HTML = "";
-try {
-  DASHBOARD_HTML = readFileSync(
-    join(__dir, "../../control-panel/src/ui.html"),
-    "utf8",
-  );
-} catch {
-  DASHBOARD_HTML = "<h1>TabGhost</h1><p>Dashboard UI not found.</p>";
+let DASHBOARD_HTML = EMBEDDED_DASHBOARD_HTML || "";
+if (!DASHBOARD_HTML) {
+  try {
+    DASHBOARD_HTML = readFileSync(
+      join(__dir, "../../control-panel/src/ui.html"),
+      "utf8",
+    );
+  } catch {
+    DASHBOARD_HTML = "<h1>TabGhost</h1><p>Dashboard UI not found.</p>";
+  }
 }
 app.get("/", (c) => c.html(DASHBOARD_HTML));
 

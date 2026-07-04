@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <style>
+    :root { color-scheme: dark; }
+    body { font: 14px/1.5 system-ui, sans-serif; background:#0a0b0f; color:#e6e8ef; padding:24px; max-width:520px; }
+    h1 { font-size:18px; }
+    label { display:block; margin:14px 0 4px; color:#9aa0b0; font-size:12px; }
+    input { width:100%; padding:8px 10px; border-radius:8px; border:1px solid #2a2f3e; background:#12141b; color:#e6e8ef; box-sizing:border-box; }
+    button { margin-top:16px; padding:9px 16px; border-radius:8px; border:0; background:#6d5efc; color:#fff; font-weight:600; cursor:pointer; }
+    .ok { color:#54d18c; margin-left:10px; }
+  </style>
+</head>
+<body>
+  <h1>TabGhost Settings</h1>
+  <label for="baseUrl">API base URL</label>
+  <input id="baseUrl" placeholder="http://127.0.0.1:8787" />
+  <label for="token">Bearer token (optional)</label>
+  <input id="token" type="password" placeholder="leave blank if no auth" />
+  <div><button id="save">Save</button><span id="saved" class="ok"></span></div>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

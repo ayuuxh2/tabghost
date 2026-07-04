@@ -1,31 +1,89 @@
 # TabGhost
 
-TabGhost is a browser workspace layer for automations, AI agents, QA teams, and power users.
+**One browser. Many isolated sub-profiles. Built for AI agents, automation, and multi-tenant testing.**
 
-## Positioning
+TabGhost lets you spin up unlimited isolated browser sub-profiles inside a single controlled browser layer. Each sub-profile has its own cookies, localStorage, IndexedDB, cache, service workers, proxy, and a stable device identity — so sessions never leak into each other, even on the same domain. Agents can create, clone, drive, snapshot, and reset them through a simple local API.
 
-- One browser profile containing many isolated sub-profiles
-- Each sub-profile has its own cookies, storage, proxy, and automation hooks
-- Built for deterministic sessions, replay, cloning, and reset
-- Open source and enterprise-ready
+> Not an "anti-detect" toy. TabGhost is a workspace layer for reproducible, isolated, automatable browser sessions.
 
-## Product principles
+---
 
-1. **Workspace isolation** — each session is a first-class object
-2. **Automation-first** — agents can spawn, control, and reset sessions
-3. **Deterministic replay** — saved recipes can be rehydrated exactly
-4. **Auditability** — every sub-profile has history and state snapshots
-5. **Brand control** — repo governance keeps the project identity intact
+## Why
 
-## Monorepo layout
+Running many accounts, tenants, or agent tasks from one machine normally means juggling separate browser profiles by hand, or fighting a browser that shares cookies and fingerprints across tabs. TabGhost makes each **sub-profile** a first-class object:
 
-- `brand/` — identity, naming, positioning, and contribution rules
-- `docs/` — architecture and product documentation
-- `apps/desktop/` — browser shell and control plane
-- `apps/control-panel/` — dashboard for sessions and automations
-- `packages/session-core/` — shared session and isolation primitives
-- `.github/workflows/` — CI and release automation
+- **Isolated** — separate on-disk storage partition per sub-profile
+- **Consistent** — a stable, internally-coherent device identity (UA, platform, screen, WebGL, canvas/audio, timezone, locale)
+- **Automatable** — spawn and drive sessions over HTTP or CLI
+- **Reproducible** — clone a sub-profile or reset it to a clean state
+- **Auditable** — metadata, tags, and workspaces for multi-tenant grouping
 
-## Next step
+## Architecture
 
-Draft the architecture blueprint and repository governance docs, then wire the initial app skeletons.
+```
+packages/session-core   Sub-profile engine: storage isolation, identity presets,
+                        session lifecycle (spawn / clone / reset / delete)
+apps/desktop            Automation API server (Hono) + CLI over session-core
+apps/control-panel      Single-file dashboard UI (served by the API)
+apps/extension          MV3 browser extension: controller/dashboard for the local API
+```
+
+The heavy lifting runs through a controlled Chromium instance (via Playwright), one persistent context per sub-profile. The extension is a **controller** — it talks to the local API, it does not try to spoof anything from inside the page.
+
+## Quick start (from source)
+
+```bash
+bun install
+bun run build:core
+bun run api            # starts the automation API + dashboard on :8787
+```
+
+Open http://127.0.0.1:8787 for the dashboard, or use the CLI:
+
+```bash
+bun run cli identities                         # list device identities
+bun run cli create "Tenant A" win-us-east      # create a sub-profile
+bun run cli list
+bun run cli open <id> https://example.com      # launch a live session
+```
+
+## Automation API
+
+`GET /health` · `GET /identities` · `GET|POST /profiles` · `GET|PATCH|DELETE /profiles/:id` · `POST /profiles/:id/clone` · `GET|POST /sessions` · `DELETE /sessions/:id` · `POST /sessions/:id/actions`
+
+Session actions: `navigate`, `click`, `fill`, `type`, `text`, `html`, `screenshot`, `waitFor`, `eval`, `cookies`, `pages`.
+
+Set `TABGHOST_TOKEN` to require `Authorization: Bearer <token>` on every request.
+
+```bash
+# create a profile, spawn a session, navigate, read the title
+curl -s localhost:8787/profiles -d '{"label":"A","identityId":"win-us-east"}'
+curl -s localhost:8787/sessions -d '{"subProfileId":"<id>","startUrl":"https://example.com"}'
+curl -s localhost:8787/sessions/<sid>/actions -d '{"action":"text","selector":"h1"}'
+```
+
+## Downloads
+
+Standalone binaries (no runtime required) for Linux, macOS, and Windows, plus the browser extension, are published on the [Releases page](https://github.com/ayuuxh2/tabghost/releases). Playwright's Chromium is fetched on first run.
+
+## Build binaries locally
+
+```bash
+bun run build:core
+bash scripts/build-binaries.sh     # -> dist/binaries/
+bash scripts/package-release.sh    # -> dist/release/ (archives + extension + checksums)
+```
+
+## Browser extension
+
+Load `apps/extension/` as an unpacked MV3 extension (Chrome → Extensions → Developer mode → Load unpacked), or install the packaged zip from Releases. Point it at your local API in the extension's settings.
+
+## Project status
+
+Working today: sub-profile engine, storage isolation, identity injection, session manager, automation API, CLI, dashboard, standalone binaries, browser extension, CI + release automation.
+
+See `docs/ARCHITECTURE.md` for design details and `docs/REPO-GOVERNANCE.md` for contribution and branding rules.
+
+## License
+
+MIT — see `LICENSE`.
