@@ -32,19 +32,31 @@ The heavy lifting runs through a controlled Chromium instance (via Playwright), 
 
 ## Quick start (from source)
 
+### macOS / Linux (using Bun)
 ```bash
 bun install
 bun run build:core
 bun run api            # starts the automation API + dashboard on :8787
 ```
 
-Open http://127.0.0.1:8787 for the dashboard, or use the CLI:
+### Windows (using Node.js)
+*Note: Bun on Windows has a known bug that hangs Playwright browser pipes. Use Node.js/tsx on Windows to run TabGhost.*
+```bash
+bun install            # installs dependencies
+bun run build:core     # builds the core package
+npm run api:node       # starts the API + dashboard on :8787
+```
+
+Once started, open http://127.0.0.1:8787 for the dashboard, or use the CLI:
 
 ```bash
-bun run cli identities                         # list device identities
-bun run cli create "Tenant A" win-us-east      # create a sub-profile
-bun run cli list
-bun run cli open <id> https://example.com      # launch a live session
+# On Mac/Linux:
+bun run cli identities
+bun run cli open <id> https://example.com
+
+# On Windows:
+npm run cli:node identities
+npm run cli:node open <id> https://example.com
 ```
 
 ## Automation API

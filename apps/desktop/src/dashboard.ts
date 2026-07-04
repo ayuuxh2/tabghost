@@ -1,13 +1,8 @@
 // The dashboard HTML is embedded at build time so the compiled binary is fully
-// self-contained (no external files needed at runtime). Bun inlines this import
-// as a string when bundling/compiling with `--compile`.
+// self-contained (no external files needed at runtime). Bun/Node can load this JSON.
 //
-// In plain dev (`bun run src/server.ts`) the text import also works, but if a
-// toolchain can't resolve it, server.ts falls back to reading the file from disk.
-import html from "../../control-panel/src/ui.html" with { type: "text" };
+// In plain dev the JSON strings are empty, and server.ts falls back to reading the files from disk.
+import assets from "./dashboard_assets.json" with { type: "json" };
 
-export const EMBEDDED_DASHBOARD_HTML: string = html;
-
-import homeHtml from "../../control-panel/src/home.html" with { type: "text" };
-
-export const EMBEDDED_HOME_HTML: string = homeHtml;
+export const EMBEDDED_DASHBOARD_HTML: string = assets.ui;
+export const EMBEDDED_HOME_HTML: string = assets.home;

@@ -54,7 +54,7 @@ async function refresh() {
       if (live) {
         acts.appendChild(btn("Close", "ghost", () => api.closeSession(live.id).then(refresh)));
       } else {
-        acts.appendChild(btn("Launch", "", () => api.spawn({ subProfileId: p.id }).then(refresh)));
+        acts.appendChild(btn("Launch", "", () => api.spawn({ subProfileId: p.id, headless: false }).then(refresh)));
       }
       acts.appendChild(btn("Clone", "ghost", () => api.cloneProfile(p.id).then(refresh)));
       acts.appendChild(
