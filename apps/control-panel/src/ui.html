@@ -48,6 +48,10 @@
     .toast.err{border-color:var(--danger);color:var(--danger)}
     .brand-lock{font-size:11px;color:var(--muted);margin-left:auto}
     a{color:var(--accent)}
+    .modal-back{position:fixed;inset:0;background:rgba(0,0,0,.6);display:grid;place-items:center;z-index:50}
+    .modal{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;width:min(420px,92vw)}
+    .modal h3{margin:0 0 14px;font-size:15px}
+    .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
   </style>
 </head>
 <body>
@@ -86,6 +90,16 @@
     </div>
   </main>
   <div id="toast" class="toast"></div>
+  <div id="modal" class="modal-back" style="display:none">
+    <div class="modal">
+      <h3 id="m-title">Launch session</h3>
+      <div id="m-body"></div>
+      <div class="modal-actions">
+        <button class="ghost" id="m-cancel">Cancel</button>
+        <button id="m-ok">Launch</button>
+      </div>
+    </div>
+  </div>
   <script>
     const API = (window.TABGHOST_API || "") ;
     async function api(path, opts){
@@ -155,9 +169,27 @@
         loadProfiles();
       }catch(e){toast(e.message,true);}
     }
-    async function spawn(id){const url=prompt('Launch session — start URL:','https://example.com');if(url===null)return;try{await api('/sessions',{method:'POST',body:JSON.stringify({subProfileId:id,startUrl:url||'about:blank'})});toast('Session launched');loadSessions();}catch(e){toast(e.message,true);}}
+    let modalOk=null;
+    function showModal(title, bodyHtml, okLabel, onOk){
+      document.getElementById('m-title').textContent=title;
+      document.getElementById('m-body').innerHTML=bodyHtml;
+      document.getElementById('m-ok').textContent=okLabel||'OK';
+      document.getElementById('modal').style.display='grid';
+      modalOk=onOk;
+      const first=document.querySelector('#m-body input'); if(first){first.focus();first.select&&first.select();}
+    }
+    function hideModal(){document.getElementById('modal').style.display='none';modalOk=null;}
+    document.getElementById('m-cancel').onclick=hideModal;
+    document.getElementById('m-ok').onclick=async()=>{const fn=modalOk;hideModal();if(fn)await fn();};
+    document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')hideModal();});
+    function spawn(id){
+      showModal('Launch session','<label>Start URL</label><input id="m-url" value="https://example.com" />','Launch',async()=>{
+        const url=(document.getElementById('m-url')?.value||'').trim();
+        try{await api('/sessions',{method:'POST',body:JSON.stringify({subProfileId:id,startUrl:url||'about:blank'})});toast('Session launched');loadSessions();}catch(e){toast(e.message,true);}
+      });
+    }
     async function clone(id){try{await api('/profiles/'+id+'/clone',{method:'POST',body:'{}'});toast('Cloned');loadProfiles();}catch(e){toast(e.message,true);}}
-    async function del(id){if(!confirm('Delete this sub-profile and all its state?'))return;try{await api('/profiles/'+id,{method:'DELETE'});toast('Deleted');loadProfiles();loadSessions();}catch(e){toast(e.message,true);}}
+    async function del(id){showModal('Delete sub-profile','<p style="color:var(--muted);margin:0">This permanently deletes the sub-profile and all its isolated browser state (cookies, storage, cache). This cannot be undone.</p>','Delete',async()=>{try{await api('/profiles/'+id,{method:'DELETE'});toast('Deleted');loadProfiles();loadSessions();}catch(e){toast(e.message,true);}});}
     async function closeSession(id){try{await api('/sessions/'+id,{method:'DELETE'});toast('Closed');loadSessions();}catch(e){toast(e.message,true);}}
     async function shot(id){try{const{result}=await api('/sessions/'+id+'/actions',{method:'POST',body:JSON.stringify({action:'screenshot',fullPage:false})});const w=window.open();w.document.write('<img src="'+result.screenshot+'" style="max-width:100%">');}catch(e){toast(e.message,true);}}
     function val(id){return document.getElementById(id).value.trim();}
