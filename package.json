@@ -7,8 +7,10 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "echo 'build not wired yet'",
-    "lint": "echo 'lint not wired yet'",
-    "format": "echo 'format not wired yet'"
+    "typecheck": "bun run --filter '*' typecheck",
+    "api": "bun run --cwd apps/desktop start",
+    "dev": "bun run --cwd apps/desktop dev",
+    "cli": "bun run --cwd apps/desktop cli",
+    "web": "bun run --cwd apps/control-panel dev"
   }
 }

@@ -1,0 +1,17 @@
+{
+  "name": "@tabghost/control-panel",
+  "version": "0.1.0",
+  "description": "TabGhost dashboard — manage sub-profiles, sessions, and automations.",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch run src/serve.ts",
+    "start": "bun run src/serve.ts"
+  },
+  "dependencies": {
+    "hono": "^4.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  }
+}
