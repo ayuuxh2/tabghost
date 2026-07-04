@@ -1,0 +1,14 @@
+{
+  "name": "tabghost",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "echo 'build not wired yet'",
+    "lint": "echo 'lint not wired yet'",
+    "format": "echo 'format not wired yet'"
+  }
+}
